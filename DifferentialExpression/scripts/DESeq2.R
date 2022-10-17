@@ -19,7 +19,6 @@ metadata$Group <-factor(metadata$Group)
 #metadata[order(metadata$Group, decreasing = FALSE), ]
 
 #remove genes that have zero length
-#zero_length = (apply(txi$abundance, 1, max) == 0) & (apply(txi$length, 1, min) == 0)
 zero_length = (apply(txi$length, 1, min) == 0)
 txi$length = txi$length[!zero_length,]
 txi$abundance = txi$abundance[!zero_length,]
@@ -54,7 +53,6 @@ rld_mat <- assay(rld)
 # Compute pairwise correlation values
 rld_cor <- cor(rld_mat)    ## cor() is a base R function
 # Plot heatmap using the correlation matrix and the metadata object
-#pheatmap(rld_cor, annotation = metadata)
 heat.colors <- RColorBrewer::brewer.pal(6, "Blues")
 pdf(paste0(outputDir, "QC/", project_name, "_", "QC_correlation_matrix.pdf"))
 pheatmap(rld_cor, annotation = metadata.qc, border_color=NA, fontsize = 10, 
