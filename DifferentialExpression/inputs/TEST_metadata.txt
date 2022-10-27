@@ -1,0 +1,7 @@
+LibraryName	Group
+TEST_0001_Ov_C_WT_S1	sensitive
+TEST_0001_Ov_C_WT_S2	sensitive
+TEST_0001_Ov_C_WT_S3	sensitive
+TEST_0002_Ov_C_WT_R1	resistant
+TEST_0002_Ov_C_WT_R2	resistant
+TEST_0002_Ov_C_WT_R3	resistant
