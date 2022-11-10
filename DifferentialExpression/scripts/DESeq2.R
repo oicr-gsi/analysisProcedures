@@ -24,16 +24,14 @@ suppressMessages(library(tximport))
 suppressMessages(library(ggplot2))
 suppressMessages(library(pheatmap))
 
-print("STEP 1: reading inputs")
+cat("\n#### STEP 1: reading inputs ####\n\n")
 
 # read inputs
-#inputDir <- "/.mounts/labs/gsiprojects/gsi/AnalysisProcedures/analysisProcedures/DifferentialExpression/inputs/rsem"
 inputDir <- opt$i
-#outputDir <- "/.mounts/labs/gsiprojects/gsi/AnalysisProcedures/analysisProcedures/DifferentialExpression/outputs/"
 outputDir <- opt$o
 metadata <- read.csv(opt$m, sep = "\t")
-#metadata <- read.csv("/.mounts/labs/gsiprojects/gsi/AnalysisProcedures/analysisProcedures/DifferentialExpression/inputs/TEST_metadata.txt", sep = "\t")
 files <- file.path(inputDir, paste0(metadata$LibraryName, ".genes.results"))
+
 #get project name from input rsem data, or update this manually
 project_name <- strsplit(basename(files[1]), split = "_")[[1]][1]
 names(files) <- paste0(metadata$LibraryName)
@@ -42,7 +40,6 @@ names(files) <- paste0(metadata$LibraryName)
 txi <- tximport(files, type = "rsem", txIn = FALSE, txOut = FALSE)
 rownames(metadata) <- colnames(txi$counts)
 metadata$Group <-factor(metadata$Group)
-#metadata[order(metadata$Group, decreasing = FALSE), ]
 
 #remove genes that have zero length
 zero_length = (apply(txi$length, 1, min) == 0)
@@ -50,15 +47,20 @@ txi$length = txi$length[!zero_length,]
 txi$abundance = txi$abundance[!zero_length,]
 txi$counts = txi$counts[!zero_length,]
 
-print("STEP 2: creating QC plots")
+#prepare data for DE analysis
+design <- ~Group
+cat(paste0("\nSelected design formula: ", gsub(",", "", toString(design)),"\n"))
+cat("Loading data to DESeq2\n")
+dds <- DESeqDataSetFromTximport(txi, metadata, design) # tidy = TRUE) #this will be used in QC and analysis
+
+cat("\n#### STEP 2: creating QC plots ####\n\n")
 
 #_________________QC_________________##
-dir.create(outputDir)
-dir.create(paste0(outputDir, "QC/"))
+dir.create(outputDir, showWarnings = FALSE)
+dir.create(paste0(outputDir, "QC/"), showWarnings = FALSE)
 
 ### QC: PCA
-qc.dds <- DESeqDataSetFromTximport(txi, metadata, ~Group)
-qc.dds <- estimateSizeFactors(qc.dds)
+qc.dds <- estimateSizeFactors(dds)
 # Transform counts for data visualization PCA
 rld <- rlog(qc.dds, blind=TRUE)
 #shorten name
@@ -86,19 +88,18 @@ pdf(paste0(outputDir, "QC/", project_name, "_", "QC_correlation_matrix.pdf"))
 pheatmap(rld_cor, annotation = metadata.qc, border_color=NA, fontsize = 10,
          fontsize_row = 10, height=30)
 
-print("STEP 3: running DE analysis")
+cat("\n#### STEP 3: running DE analysis ####\n\n")
 
 #_______________DESeq2_______________##
 # run DESeq2
-design <- ~Group
-print(paste0("Selected design formula ", toString(design)))
-dds <- DESeqDataSetFromTximport(txi, metadata, design) # tidy = TRUE)
 dds$Group <- relevel(dds$Group, ref = "sensitive") #ref indicates the baseline group
 dds <- DESeq(dds)
 
 # get results from dds object
 results <- results(dds, alpha=0.05)
-results
+cat("\n")
+head(results, n = 0L)
+cat("\n")
 summary(results)
 # remove ensemble ID version number
 rownames(results) <- sub('\\.[0-9]*$', '', rownames(results))
@@ -122,12 +123,10 @@ dev.off()
 ## visualize the results, the top line indicates what is used as baseline, the last item (sensitive) is the baseline
 #head(results)
 #summary(results)
-## log2 foldchange vs normalized counts
-#plotMA(results, ylim=c(-2,2))
 ## counts for a particular gene
 #plotCounts(dds, gene=which.min(results$padj), intgroup="group")
 ## variance stabilization
 #vst <- varianceStabilizingTransformation(dds)
 #vsd <- assay(vst) # the vsd object contains the normalized data matrix which can be used in downstream analysis
 
-print(paste0("Analysis complete, data is in ", outputDir))
+cat("\n#### Analysis complete ####\n\n")
