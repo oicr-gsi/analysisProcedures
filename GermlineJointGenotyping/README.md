@@ -19,6 +19,10 @@ A predefined set of gvcf files are provided as input to the joint Genotyping wor
  
 ### Deliverables
  - VCF file.
+ - the raw joint genotyped vcf + tbi index
+ - the recalibrated joint gentotyped vcf + tbi index
+ - a calling summary metrics file, a single summary record for the joint calling
+ - a calling detailed metrics file, one record per input vcf
 
 ### Resources
 - GATK Haplotype Caller : https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller
