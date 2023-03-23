@@ -14,7 +14,9 @@ A predefined set of gvcf files are provided as input to the joint Genotyping wor
 
 ### Procedure
  1. Identify the set of gvcf files produced by the haplotype caller workflow
- 2. Construct an olive that will pull these files as inputs to the joint genotyping workflow. This workflow is available in vidarr stage. The olive can be set up as an .actnow.
+ 2. Construct an olive that will pull these files as inputs to the joint genotyping workflow. This workflow is available in vidarr stage. The olive can be set up as an .actnow.  The olive on this page can be modified to specify the project, with other modifications to limit the input data as needed.
+ 3. Once done processing, the workflow will produce a joint genotyped, variant quality score recalibrated workflow
+ 4. Annotate the workflow with VEP.  This should be done using the WDL file and can likely be set up as another actnow.
  3. Collect and release data
  
 ### Deliverables
