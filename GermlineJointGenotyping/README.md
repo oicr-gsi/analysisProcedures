@@ -22,9 +22,12 @@ A predefined set of gvcf files are provided as input to the joint Genotyping wor
 
 ### Resources
 - GATK Haplotype Caller : https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller
+- workflow : https://github.com/oicr-gsi/gatk-haloptype-caller
 - GVCF File Format : https://gatk.broadinstitute.org/hc/en-us/articles/360035531812-GVCF-Genomic-Variant-Call-Format
 - GATK GenotypeGVCFs : https://gatk.broadinstitute.org/hc/en-us/articles/360037057852-GenotypeGVCFs
+- workflow : https://github.com/oicr-gsi/gatk-genotype-GVCFs
 - Joint Genotyping : https://gatk.broadinstitute.org/hc/en-us/articles/360035890431-The-logic-of-joint-calling-for-germline-short-variants
 - VQSR : https://gatk.broadinstitute.org/hc/en-us/articles/360035531612-Variant-Quality-Score-Recalibration-VQSR-
 - VCF specification : https://samtools.github.io/hts-specs/VCFv4.2.pdf
+
 
