@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/oicr-gsi/analysisProcedures/oicr_logo.png" width=25% height=25%>
+<img src="https://raw.githubusercontent.com/oicr-gsi/analysisProcedures/resources/oicr_logo.png" width=25% height=25%>
 
 # Germline Joint Genotyping   
 
@@ -21,10 +21,10 @@ A predefined set of gvcf files are provided as input to the joint Genotyping wor
  - VCF file.
 
 ### Resources
-GATK Haplotype Caller : https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller
-GVCF File Format : https://gatk.broadinstitute.org/hc/en-us/articles/360035531812-GVCF-Genomic-Variant-Call-Format
-GATK GenotypeGVCFs : https://gatk.broadinstitute.org/hc/en-us/articles/360037057852-GenotypeGVCFs
-Joint Genotyping : https://gatk.broadinstitute.org/hc/en-us/articles/360035890431-The-logic-of-joint-calling-for-germline-short-variants
-VQSR : https://gatk.broadinstitute.org/hc/en-us/articles/360035531612-Variant-Quality-Score-Recalibration-VQSR-
-VCF specification : https://samtools.github.io/hts-specs/VCFv4.2.pdf
+- GATK Haplotype Caller : https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller
+- GVCF File Format : https://gatk.broadinstitute.org/hc/en-us/articles/360035531812-GVCF-Genomic-Variant-Call-Format
+- GATK GenotypeGVCFs : https://gatk.broadinstitute.org/hc/en-us/articles/360037057852-GenotypeGVCFs
+- Joint Genotyping : https://gatk.broadinstitute.org/hc/en-us/articles/360035890431-The-logic-of-joint-calling-for-germline-short-variants
+- VQSR : https://gatk.broadinstitute.org/hc/en-us/articles/360035531612-Variant-Quality-Score-Recalibration-VQSR-
+- VCF specification : https://samtools.github.io/hts-specs/VCFv4.2.pdf
 
