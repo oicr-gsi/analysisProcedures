@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/oicr-gsi/analysisProcedures/DEanalysisProcedure/docs/oicr_logo.png" width=25% height=25%>
+<img src="https://raw.githubusercontent.com/oicr-gsi/analysisProcedures/oicr_logo.png" width=25% height=25%>
 
 # Germline Joint Genotyping   
 
