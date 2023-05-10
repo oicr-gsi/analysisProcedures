@@ -1403,7 +1403,7 @@ FindOverlap <- function (converted,gInfo, GO,selectOrg,minFDR, reduced = FALSE) 
 		if (length(ix) == 0 ) {return(idNotRecognized )}
 		totalGenes <- orgInfo[which(orgInfo$id == as.numeric(selectOrg)),7]
 	}
-	pathway <- dbConnect(sqlite,gmtFiles[ix],flags=SQLITE_RO)
+	pathway <- dbConnect(RSQLite::SQLite(),gmtFiles[ix],flags=SQLITE_RO)
 	
 		
 	sqlQuery = paste( " select distinct gene,pathwayID from pathway where gene IN ('", paste(querySet,collapse="', '"),"')" ,sep="")
@@ -3668,7 +3668,7 @@ keggPathwayID <- function (pathwayDescription, Species, GO,selectOrg) {
 		if (length(ix) == 0 ) {return(NULL )}
 		totalGenes <- orgInfo[which(orgInfo$id == as.numeric(selectOrg)),7]
 	}
-	pathway <- dbConnect(sqlite,gmtFiles[ix],flags=SQLITE_RO)
+	pathway <- dbConnect(RSQLite::SQLite(),gmtFiles[ix],flags=SQLITE_RO)
 	
 	# change Parkinson's disease to Parkinson\'s disease    otherwise SQL 
 	pathwayDescription <- gsub("\'","\'\'",pathwayDescription)
