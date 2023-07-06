@@ -16,8 +16,8 @@ A predefined set of gvcf files are provided as input to the joint Genotyping wor
  1. Identify the set of gvcf files produced by the haplotype caller workflow
  2. Construct an olive that will pull these files as inputs to the joint genotyping workflow. This workflow is available in vidarr stage. The olive can be set up as an .actnow.  The olive on this page can be modified to specify the project, with other modifications to limit the input data as needed, for example when we only process certain cases that have been released to the time point. An olive template "JointGenotyping.shesmu" can be found on this repo.
  3. The olive will invoke the running of genotypeGVCFs workflow (https://github.com/oicr-gsi/gatk-genotype-GVCFs/blob/master/genotypeGVCFs.wdl), which will run the joint genotyping tool, GenotypeGVCFs, and also run tools for consolidate GVCFs and VariantRecalibrator (VQSR) included in gatk best practise. Once done processing, the workflow will produce a joint genotyped, variant quality score recalibrated outputs. 
- 4. Annotate the workflow with VEP.  This should be done using the WDL file and can likely be set up as another actnow.
- 3. Collect and release data
+ 4. Annotate the workflow with VEP. The vcf output of step 3 is a single recalibrated.vcf.gz file, use this as input for variantEffectPredictor. This should be done using the WDL file and can likely be set up as another actnow, since this will only need to run once for one joint analysis. 
+ 3. Collect and release data.
  
 ### Deliverables
  - VCF file.
@@ -30,7 +30,7 @@ A predefined set of gvcf files are provided as input to the joint Genotyping wor
 ### Static action running mode
 Since joint genetyping usually performed for specific project at certain time points, it wouldn't be desirable to use olive for pipeline running mode, which will generate actions continuously. We can use .actnow file to generate static actions (https://github.com/oicr-gsi/shesmu/blob/master/actnow.md). 
 For this purpose write a shesmu file, but don't push this .shesmu file as olive to shesmu stage, instead use it in simulator to generate .actnow file and push the .actnow file to shesmu stage ( where we usually put olive). shesmu will find this file but only generate static actions specified in .actnow.
-Before this .vidarrworkflow needs set up as usual (for example genotypeGVCFs.vidarrworkflow under vidarr/stage).
+Before this .vidarrworkflow needs to be set up as usual (for example genotypeGVCFs.vidarrworkflow under vidarr/stage).
 
 ### Resources
 - GATK Haplotype Caller : https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller

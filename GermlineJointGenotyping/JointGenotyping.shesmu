@@ -95,7 +95,8 @@ Olive
   Label "Is Vidarr data?"
   Where workflow_engine == VIDARR
 
-  Where project In ["DESP"]
+  Label "Select project"
+  Where project In ["DESP"] # subsitetue with actual project name
   
   Label "inputs from haplotypeCaller workflow"
   Where
@@ -107,6 +108,7 @@ Olive
     olive::common::is_project_active(project)
     && !(olive::common::is_clinical_project(project))
     && instrument_model != "Illumina MiSeq"
+    # Use following line if project config has set enable_genotypeGVCFs to true 
     #&& (olive::common::get_project_info(project).cancer_pipeline.fulldepth_analysis.haplotypeCaller_pipeline.enable_genotypeGVCFs Default False)
 
     Label "group the files by merged_library, workflow run"
@@ -119,7 +121,7 @@ Olive
     Pick Max timestamp By project, @merged_library, reference
     
     Dump All To d0
-    #Label "group the files by donor"
+    #Label "group the files by donor" this is optional
     #Group By donor, project, reference, library_design, targeted_resequencing
     #Into
     #  inputVcfs = List INTERNAL {vcf},
