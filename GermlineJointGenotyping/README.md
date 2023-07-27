@@ -28,7 +28,7 @@ A predefined set of gvcf files are provided as input to the joint Genotyping wor
  - md5sum for the result files
 
 ### Static action running mode
-Since joint genetyping usually performed for specific project at certain time points, it wouldn't be desirable to use olive for pipeline running mode, which will generate actions continuously. We can use .actnow file to generate static actions (https://github.com/oicr-gsi/shesmu/blob/master/actnow.md). 
+Since joint genotyping usually performed for specific project at certain time points, it wouldn't be desirable to use olive for pipeline running mode, which will generate actions continuously. We can use .actnow file to generate static actions (https://github.com/oicr-gsi/shesmu/blob/master/actnow.md). 
 For this purpose write a shesmu file, but don't push this .shesmu file as olive to shesmu stage, instead use it in simulator to generate .actnow file and push the .actnow file to shesmu stage ( where we usually put olive). shesmu will find this file but only generate static actions specified in .actnow.
 Before this .vidarrworkflow needs to be set up as usual (for example genotypeGVCFs.vidarrworkflow under vidarr/stage).
 
@@ -41,5 +41,5 @@ Before this .vidarrworkflow needs to be set up as usual (for example genotypeGVC
 - Joint Genotyping : https://gatk.broadinstitute.org/hc/en-us/articles/360035890431-The-logic-of-joint-calling-for-germline-short-variants
 - VQSR : https://gatk.broadinstitute.org/hc/en-us/articles/360035531612-Variant-Quality-Score-Recalibration-VQSR-
 - VCF specification : https://samtools.github.io/hts-specs/VCFv4.2.pdf
-
+- workflow https://github.com/oicr-gsi/variantEffectPredictor
 
