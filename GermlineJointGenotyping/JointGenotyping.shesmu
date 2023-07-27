@@ -1,0 +1,314 @@
+Version 1;
+Input cerberus_fp;
+Import vidarr::gsi::hpc::*;
+
+Function get_genotypeGVCFs_params(string reference)
+  Switch reference
+    When "hg19" Then
+    `{
+       modules = "gatk/4.1.7.0 hg19/p13 hg19-dbsnp-leftaligned/138",
+       refFasta = "$HG19_ROOT/hg19_random.fa",
+       dbsnpFilePath = "$HG19_DBSNP_LEFTALIGNED_ROOT/dbsnp_138.hg19.leftAligned.vcf.gz"
+    }`
+    When "hg38" Then
+    `{
+       modules = "gatk/4.1.7.0 hg38/p12 hg38-dbsnp/138",
+       refFasta = "$HG38_ROOT/hg38_random.fa",
+       dbsnpFilePath = "$HG38_DBSNP_ROOT/dbsnp_138.hg38.vcf.gz"
+    }`
+    Else ``;
+
+Function get_indelsVR_params(string reference)
+  Switch reference
+    When "hg19" Then
+    `{
+       modules = "gatk/4.1.7.0 hg19-gatk-genotype-gvcfs/2.0 hg19-dbsnp-leftaligned/138",
+       mills_vcf = "$HG19_GATK_GENOTYPE_GVCFS_ROOT/Mills_and_1000G_gold_standard.indels.hg19.sites.vcf.gz",
+       mills_vcf_index = "$HG19_GATK_GENOTYPE_GVCFS_ROOT/Mills_and_1000G_gold_standard.indels.hg19.sites.vcf.gz.tbi",
+       axiomPoly_vcf = "$HG19_GATK_GENOTYPE_GVCFS_ROOT/Axiom_Exome_Plus.genotypes.all_populations.poly.vcf.gz",
+       axiomPoly_index = "$HG19_GATK_GENOTYPE_GVCFS_ROOT/Axiom_Exome_Plus.genotypes.all_populations.poly.vcf.gz.tbi",
+       dbsnp_vcf = "$HG19_DBSNP_LEFTALIGNED_ROOT/dbsnp_138.hg19.leftAligned.vcf.gz",
+       dbsnp_vcf_index = "$HG19_DBSNP_LEFTALIGNED_ROOT/dbsnp_138.hg19.leftAligned.vcf.gz.tbi"
+    }`
+    When "hg38" Then
+    `{
+       modules = "gatk/4.1.7.0 hg38-gatk-genotype-gvcfs/2.0 hg38-dbsnp/138",
+       mills_vcf = "$HG38_GATK_GENOTYPE_GVCFS_ROOT/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz",
+       mills_vcf_index = "$HG38_GATK_GENOTYPE_GVCFS_ROOT/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz.tbi",
+       axiomPoly_vcf = "$HG38_GATK_GENOTYPE_GVCFS_ROOT/Axiom_Exome_Plus.genotypes.all_populations.poly.hg38.vcf.gz",
+       axiomPoly_index = "$HG38_GATK_GENOTYPE_GVCFS_ROOT/Axiom_Exome_Plus.genotypes.all_populations.poly.hg38.vcf.gz.tbi",
+       dbsnp_vcf = "$HG38_DBSNP_ROOT/dbsnp_138.hg38.vcf.gz",
+       dbsnp_vcf_index = "$HG38_DBSNP_ROOT/dbsnp_138.hg38.vcf.gz.tbi"
+    }`
+    Else ``;
+
+Function get_snpsVR_params(string reference)
+  Switch reference
+    When "hg19" Then
+    `{
+       modules = "gatk/4.1.7.0 hg19-gatk-genotype-gvcfs/2.0 hg19-dbsnp-leftaligned/138",
+       hapmap_vcf = "$HG19_GATK_GENOTYPE_GVCFS_ROOT/hapmap_3.3.hg19.sites.vcf.gz",
+       hapmap_vcf_index = "$HG19_GATK_GENOTYPE_GVCFS_ROOT/hapmap_3.3.hg19.sites.vcf.gz.tbi",
+       omni_vcf = "$HG19_GATK_GENOTYPE_GVCFS_ROOT/1000G_omni2.5.hg19.sites.vcf.gz",
+       omni_vcf_index = "$HG19_GATK_GENOTYPE_GVCFS_ROOT/1000G_omni2.5.hg19.sites.vcf.gz.tbi",
+       one_thousand_genomes_vcf = "$HG19_GATK_GENOTYPE_GVCFS_ROOT/1000G_phase1.snps.high_confidence.hg19.sites.vcf.gz",
+       one_thousand_genomes_vcf_index = "$HG19_GATK_GENOTYPE_GVCFS_ROOT/1000G_phase1.snps.high_confidence.hg19.sites.vcf.gz.tbi",
+       dbsnp_vcf = "$HG19_DBSNP_LEFTALIGNED_ROOT/dbsnp_138.hg19.leftAligned.vcf.gz",
+       dbsnp_vcf_index = "$HG19_DBSNP_LEFTALIGNED_ROOT/dbsnp_138.hg19.leftAligned.vcf.gz.tbi"
+    }`
+    When "hg38" Then
+    `{
+       modules = "gatk/4.1.7.0 hg38-gatk-genotype-gvcfs/2.0 hg38-dbsnp/138",
+       hapmap_vcf = "$HG38_GATK_GENOTYPE_GVCFS_ROOT/hapmap_3.3.hg38.vcf.gz",
+       hapmap_vcf_index = "$HG38_GATK_GENOTYPE_GVCFS_ROOT/hapmap_3.3.hg38.vcf.gz.tbi",
+       omni_vcf = "$HG38_GATK_GENOTYPE_GVCFS_ROOT/1000G_omni2.5.hg38.vcf.gz",
+       omni_vcf_index = "$HG38_GATK_GENOTYPE_GVCFS_ROOT/1000G_omni2.5.hg38.vcf.gz.tbi",
+       one_thousand_genomes_vcf = "$HG38_GATK_GENOTYPE_GVCFS_ROOT/1000G_phase1.snps.high_confidence.hg38.vcf.gz",
+       one_thousand_genomes_vcf_index = "$HG38_GATK_GENOTYPE_GVCFS_ROOT/1000G_phase1.snps.high_confidence.hg38.vcf.gz.tbi",
+       dbsnp_vcf = "$HG38_DBSNP_ROOT/dbsnp_138.hg38.vcf.gz",
+       dbsnp_vcf_index = "$HG38_DBSNP_ROOT/dbsnp_138.hg38.vcf.gz.tbi"
+    }`
+    Else ``;
+
+Function get_variantMetrics_params(string reference)
+  Switch reference
+    When "hg19" Then
+    `{
+       modules = "gatk/4.1.7.0 hg19/p13 hg19-dbsnp-leftaligned/138",
+       dbsnp_vcf = "$HG19_DBSNP_LEFTALIGNED_ROOT/dbsnp_138.hg19.leftAligned.vcf.gz",
+       dbsnp_vcf_index = "$HG19_DBSNP_LEFTALIGNED_ROOT/dbsnp_138.hg19.leftAligned.vcf.gz.tbi",
+       ref_dict = "$HG19_ROOT/hg19_random.dict"
+    }`
+    When "hg38" Then
+    `{
+       modules = "gatk/4.1.7.0 hg38/p12 hg38-dbsnp/138",
+       dbsnp_vcf = "$HG38_DBSNP_ROOT/dbsnp_138.hg38.vcf.gz",
+       dbsnp_vcf_index = "$HG38_DBSNP_ROOT/dbsnp_138.hg38.vcf.gz.tbi",
+       ref_dict = "$HG38_ROOT/hg38_random.dict"
+    }`
+    Else ``;
+
+Olive
+  Description "Running GATKgenotypeGVCFs workflow non-clinical"
+  Tag vidarr
+
+  Label "Is Vidarr data?"
+  Where workflow_engine == VIDARR
+
+  Label "Select project"
+  Where project In ["DESP"] # subsitetue with actual project name
+  
+  Label "inputs from haplotypeCaller workflow"
+  Where
+    workflow In ["haplotypeCaller"]
+    && library_design In ["WG", "EX" ,"TS", "NN", "CH", "AS", "CM"]
+
+  Label "Is this NOT clinical, active project, NOT MiSeq, with haplotypeCaller_pipeline enabled?"
+  Where
+    olive::common::is_project_active(project)
+    && !(olive::common::is_clinical_project(project))
+    && instrument_model != "Illumina MiSeq"
+    # Use following line if project config has set enable_genotypeGVCFs to true 
+    #&& (olive::common::get_project_info(project).cancer_pipeline.fulldepth_analysis.haplotypeCaller_pipeline.enable_genotypeGVCFs Default False)
+
+    Label "group the files by merged_library, workflow run"
+    Group By @merged_library, workflow_run_accession, project, reference = `workflow_run_labels["reference"]? As string`,targeted_resequencing
+    Into
+        vcf = Where metatype == "application/g-vcf-gz" Univalued accession,
+        vcf_index = Where metatype == "application/tbi" Univalued accession,
+        external_keys = Where metatype In ["application/g-vcf-gz", "application/tbi"] List vidarr::sign(external_key, std::signature::sha1),
+        timestamp = Max timestamp
+    Pick Max timestamp By project, @merged_library, reference
+    
+    Dump All To d0
+    #Label "group the files by donor" this is optional
+    #Group By donor, project, reference, library_design, targeted_resequencing
+    #Into
+    #  inputVcfs = List INTERNAL {vcf},
+    #  inputIndices = List INTERNAL {vcf_index},
+    #  output_file_name = Univalued "{donor}_{library_design}",
+    #  external_keys = Flatten external_keys
+
+    Label "group the files by project"
+    Group By project, reference, library_design, targeted_resequencing
+    Into
+      inputVcfs = List INTERNAL {vcf},
+      inputIndices = List INTERNAL {vcf_index},
+      output_file_name = Univalued "{project}_{library_design}",
+      external_keys = Flatten external_keys
+
+    Dump All To d1
+
+    Require reference_info = `olive::common::get_reference_interval_info(reference?, library_design, targeted_resequencing)`
+      OnReject
+        Alert
+         alertname = "NoReference",
+         severity = "pipeline",
+         environment = config::misc::environment,
+         workflow = "genotypeGVCFs",
+         reference = reference Default "Missing",
+         library_design = library_design,
+         targeted_resequencing = targeted_resequencing,
+         project = project
+        For 30mins
+      Resume
+
+    Require gt_params = `get_genotypeGVCFs_params(reference?)`
+      OnReject
+        Alert
+          alertname = "NoReference",
+          severity = "pipeline",
+          environment = config::misc::environment,
+          workflow = "genotypeGVCFs",
+          reference = reference Default "Missing",
+          project = project
+        For 30mins
+      Resume
+
+    Require indelsVR_params = `get_indelsVR_params(reference?)`
+      OnReject
+        Alert
+          alertname = "NoReference",
+          severity = "pipeline",
+          environment = config::misc::environment,
+          workflow = "genotypeGVCFs",
+          reference = reference Default "Missing",
+          project = project
+        For 30mins
+      Resume
+
+    Require snpsVR_params = `get_snpsVR_params(reference?)`
+      OnReject
+        Alert
+          alertname = "NoReference",
+          severity = "pipeline",
+          environment = config::misc::environment,
+          workflow = "genotypeGVCFs",
+          reference = reference Default "Missing",
+          project = project
+        For 30mins
+      Resume
+
+    Require metrics_params = `get_variantMetrics_params(reference?)`
+      OnReject
+        Alert
+          alertname = "NoReference",
+          severity = "pipeline",
+          environment = config::misc::environment,
+          workflow = "genotypeGVCFs",
+          reference = reference Default "Missing",
+          project = project
+        For 30mins
+      Resume
+
+    Run genotypeGVCFs_v2_0_1
+    Tag "project:{project}"
+    #Tag "donor:{donor}"
+    Tag "reference:{reference_info.reference_name}"
+    Tag olive::common::priority_tag(project, CALLING)
+    Tag "DRYRUN_NOT_PRODUCTION"
+    With
+      dry_run = True,
+      external_keys = external_keys,
+      label_reference = reference_info.reference_name,
+      arguments = {
+        genotypeGVCFs_vcfs =  inputVcfs,
+        genotypeGVCFs_vcfIndices =  inputIndices,
+        genotypeGVCFs_intervalsToParallelizeBy = reference_info.chromosomes,
+        genotypeGVCFs_outputFileNamePrefix = `output_file_name`,
+        genotypeGVCFs_doHardFilter = ``,
+        genotypeGVCFs_doVQSR = `True`,
+        genotypeGVCFs_splitStringToArray_lineSeparator = ``,
+        genotypeGVCFs_splitStringToArray_jobMemory = ``,
+        genotypeGVCFs_splitStringToArray_timeout = ``,
+        genotypeGVCFs_splitStringToArray_cores = ``,
+        genotypeGVCFs_callGenomicsDBImport_modules = `"gatk/4.1.7.0"`,
+        genotypeGVCFs_callGenomicsDBImport_jobMemory = ``,
+        genotypeGVCFs_callGenomicsDBImport_overhead = ``,
+        genotypeGVCFs_callGenomicsDBImport_timeout = ``,
+        genotypeGVCFs_callGenomicsDBImport_cores = ``,
+        genotypeGVCFs_callGenomicsDBImport_extraArgs = ``,
+        genotypeGVCFs_callGenotypeGVCFs_modules = `gt_params.modules`,
+        genotypeGVCFs_callGenotypeGVCFs_refFasta = gt_params.refFasta,
+        genotypeGVCFs_callGenotypeGVCFs_dbsnpFilePath = gt_params.dbsnpFilePath,
+        genotypeGVCFs_callGenotypeGVCFs_jobMemory = ``,
+        genotypeGVCFs_callGenotypeGVCFs_overhead = ``,
+        genotypeGVCFs_callGenotypeGVCFs_cores = ``,
+        genotypeGVCFs_callGenotypeGVCFs_timeout = ``,
+        genotypeGVCFs_callGenotypeGVCFs_extraArgs = ``,
+        genotypeGVCFs_callGenotypeGVCFs_standCallConf = ``,
+        genotypeGVCFs_gatherVcfs_modules = `"gatk/4.1.7.0 tabix/0.2.6"`,
+        genotypeGVCFs_gatherVcfs_jobMemory = ``,
+        genotypeGVCFs_gatherVcfs_overhead = ``,
+        genotypeGVCFs_gatherVcfs_timeout = ``,
+        genotypeGVCFs_gatherVcfs_cores = ``,
+        genotypeGVCFs_gatherVcfs_extraArgs = ``,
+        genotypeGVCFs_hardFilter_modules = `"gatk/4.1.7.0"`,
+        genotypeGVCFs_hardFilter_excess_het_threshold = ``,
+        genotypeGVCFs_hardFilter_jobMemory = ``,
+        genotypeGVCFs_hardFilter_overhead = ``,
+        genotypeGVCFs_hardFilter_timeout = ``,
+        genotypeGVCFs_hardFilter_cores = ``,
+        genotypeGVCFs_hardFilter_extraArgs = ``,
+        genotypeGVCFs_makeSitesOnlyVcf_modules = `"gatk/4.1.7.0"`,
+        genotypeGVCFs_makeSitesOnlyVcf_jobMemory = ``,
+        genotypeGVCFs_makeSitesOnlyVcf_overhead = ``,
+        genotypeGVCFs_makeSitesOnlyVcf_timeout = ``,
+        genotypeGVCFs_makeSitesOnlyVcf_cores = ``,
+        genotypeGVCFs_makeSitesOnlyVcf_extraArgs = ``,
+        genotypeGVCFs_indelsVariantRecalibrator_modules = indelsVR_params.modules,
+        genotypeGVCFs_indelsVariantRecalibrator_mills_vcf = indelsVR_params.mills_vcf,
+        genotypeGVCFs_indelsVariantRecalibrator_mills_vcf_index = indelsVR_params.mills_vcf_index,
+        genotypeGVCFs_indelsVariantRecalibrator_axiomPoly_vcf = indelsVR_params.axiomPoly_vcf,
+        genotypeGVCFs_indelsVariantRecalibrator_axiomPoly_index = indelsVR_params.axiomPoly_index,
+        genotypeGVCFs_indelsVariantRecalibrator_dbsnp_vcf = indelsVR_params.dbsnp_vcf,
+        genotypeGVCFs_indelsVariantRecalibrator_dbsnp_vcf_index = indelsVR_params.dbsnp_vcf_index,
+        genotypeGVCFs_indelsVariantRecalibrator_jobMemory = ``,
+        genotypeGVCFs_indelsVariantRecalibrator_overhead = ``,
+        genotypeGVCFs_indelsVariantRecalibrator_timeout = ``,
+        genotypeGVCFs_indelsVariantRecalibrator_cores = ``,
+        genotypeGVCFs_indelsVariantRecalibrator_extraArgs = ``,
+        genotypeGVCFs_indelsVariantRecalibrator_max_gaussians = ``,
+        genotypeGVCFs_indelsVariantRecalibrator_recalibration_annotation_values = ``,
+        genotypeGVCFs_indelsVariantRecalibrator_recalibration_tranche_values = ``,
+        genotypeGVCFs_snpsVariantRecalibrator_modules = snpsVR_params.modules,
+        genotypeGVCFs_snpsVariantRecalibrator_hapmap_vcf = snpsVR_params.hapmap_vcf,
+        genotypeGVCFs_snpsVariantRecalibrator_hapmap_vcf_index = snpsVR_params.hapmap_vcf_index,
+        genotypeGVCFs_snpsVariantRecalibrator_omni_vcf = snpsVR_params.omni_vcf,
+        genotypeGVCFs_snpsVariantRecalibrator_omni_vcf_index = snpsVR_params.omni_vcf_index,
+        genotypeGVCFs_snpsVariantRecalibrator_one_thousand_genomes_vcf = snpsVR_params.one_thousand_genomes_vcf,
+        genotypeGVCFs_snpsVariantRecalibrator_one_thousand_genomes_vcf_index = snpsVR_params.one_thousand_genomes_vcf_index,
+        genotypeGVCFs_snpsVariantRecalibrator_dbsnp_vcf = snpsVR_params.dbsnp_vcf,
+        genotypeGVCFs_snpsVariantRecalibrator_dbsnp_vcf_index = snpsVR_params.dbsnp_vcf_index,
+        genotypeGVCFs_snpsVariantRecalibrator_jobMemory = ``,
+        genotypeGVCFs_snpsVariantRecalibrator_overhead = ``,
+        genotypeGVCFs_snpsVariantRecalibrator_timeout = ``,
+        genotypeGVCFs_snpsVariantRecalibrator_cores = ``,
+        genotypeGVCFs_snpsVariantRecalibrator_extraArgs = ``,
+        genotypeGVCFs_snpsVariantRecalibrator_max_gaussians = ``,
+        genotypeGVCFs_snpsVariantRecalibrator_recalibration_annotation_values = ``,
+        genotypeGVCFs_snpsVariantRecalibrator_recalibration_tranche_values = ``,
+        genotypeGVCFs_applyRecalibration_modules = `"gatk/4.1.7.0"`,
+        genotypeGVCFs_applyRecalibration_indel_filter_level = ``,
+        genotypeGVCFs_applyRecalibration_snp_filter_level = ``,
+        genotypeGVCFs_applyRecalibration_jobMemory = ``,
+        genotypeGVCFs_applyRecalibration_overhead = ``,
+        genotypeGVCFs_applyRecalibration_timeout = ``,
+        genotypeGVCFs_applyRecalibration_cores = ``,
+        genotypeGVCFs_applyRecalibration_extraArgsIndel = ``,
+        genotypeGVCFs_applyRecalibration_extraArgsSNP = ``,
+        genotypeGVCFs_collectVariantCallingMetrics_modules = metrics_params.modules,
+        genotypeGVCFs_collectVariantCallingMetrics_dbsnp_vcf = metrics_params.dbsnp_vcf,
+        genotypeGVCFs_collectVariantCallingMetrics_dbsnp_vcf_index = metrics_params.dbsnp_vcf_index,
+        genotypeGVCFs_collectVariantCallingMetrics_ref_dict = metrics_params.ref_dict,
+        genotypeGVCFs_collectVariantCallingMetrics_jobMemory = ``,
+        genotypeGVCFs_collectVariantCallingMetrics_overhead = ``,
+        genotypeGVCFs_collectVariantCallingMetrics_timeout = ``,
+        genotypeGVCFs_collectVariantCallingMetrics_cores = ``,
+        genotypeGVCFs_collectVariantCallingMetrics_extraArgs = ``
+      },
+      metadata = GLOBAL { ALL {{ outputDirectory = olive::common::get_project_output_prefix(project, table::vidarr_output_for_project::get(project)) }} },
+      engine_parameters = {
+        final_workflow_log_dir = config::misc::final_workflow_log_dir,
+        final_call_logs_dir = config::misc::final_call_logs_dir
+      };
