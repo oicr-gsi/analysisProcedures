@@ -1,6 +1,6 @@
 Version 1;
 Input cerberus_fp;
-Import vidarr::gsi::hpc::*;
+Import vidarr::gsi::hpc_u20::*;
 
 Function get_genotypeGVCFs_params(string reference)
   Switch reference
@@ -112,13 +112,13 @@ Olive
     #&& (olive::common::get_project_info(project).cancer_pipeline.fulldepth_analysis.haplotypeCaller_pipeline.enable_genotypeGVCFs Default False)
 
     Label "group the files by merged_library, workflow run"
-    Group By @merged_library, workflow_run_accession, project, reference = `workflow_run_labels["reference"]? As string`,targeted_resequencing
+    Group By @merged_library, workflow_run_accession, project, reference = `workflow_run_labels["reference"]? As string`,targeted_resequencing, instrument_model
     Into
         vcf = Where metatype == "application/g-vcf-gz" Univalued accession,
         vcf_index = Where metatype == "application/tbi" Univalued accession,
         external_keys = Where metatype In ["application/g-vcf-gz", "application/tbi"] List vidarr::sign(external_key, std::signature::sha1),
         timestamp = Max timestamp
-    Pick Max timestamp By project, @merged_library, reference
+    Pick Max timestamp By project, @merged_library, reference, instrument_model
     
     Dump All To d0
     #Label "group the files by donor" this is optional
@@ -130,7 +130,7 @@ Olive
     #  external_keys = Flatten external_keys
 
     Label "group the files by project"
-    Group By project, reference, library_design, targeted_resequencing
+    Group By project, reference, library_design, targeted_resequencing, instrument_model
     Into
       inputVcfs = List INTERNAL {vcf},
       inputIndices = List INTERNAL {vcf_index},
@@ -208,7 +208,7 @@ Olive
     Tag olive::common::priority_tag(project, CALLING)
     Tag "DRYRUN_NOT_PRODUCTION"
     With
-      dry_run = True,
+      dry_run = False,
       external_keys = external_keys,
       label_reference = reference_info.reference_name,
       arguments = {
