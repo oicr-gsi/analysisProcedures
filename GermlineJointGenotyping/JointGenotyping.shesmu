@@ -208,7 +208,6 @@ Olive
     Tag olive::common::priority_tag(project, CALLING)
     Tag "DRYRUN_NOT_PRODUCTION"
     With
-      dry_run = False,
       external_keys = external_keys,
       label_reference = reference_info.reference_name,
       arguments = {
