@@ -1,0 +1,144 @@
+Version 1;
+Input cerberus_fp;
+Import vidarr::gsi::hpc_u20::*;
+
+Olive
+  Description "Running dellyGermline workflow non-clinical"
+  Tag vidarr
+
+  Label "Select project"
+  Where project In ["CHARMQ"] # substitute with actual project name
+  
+  Label "inputs from delly normal only"
+  Where
+    workflow In ["delly_normal_only"]
+    && library_design == "WG"
+
+  Label "Is this NOT clinical, active project, NOT MiSeq"
+  Where
+    olive::common::is_project_active(project)
+    && !(olive::common::is_clinical_project(project))
+    && instrument_model != "Illumina MiSeq"
+    
+  Dump All To d0  
+  
+  Label "form uid, input, and reference"
+  Let
+    accession,metatype,path,project,timestamp,workflow_run_accession,input_files,external_key,tissue_type,instrument_model,
+    uid = {donor, tissue_origin, tissue_type, group_id},
+    input = {accession = accession, lims = lims, signature = std::signature::sha1, stale = stale},
+    reference_ = `workflow_run_labels["reference"]? As string`  
+
+
+  Label "require a reference, otherwise skip and alert"
+  Require reference = reference_
+  OnReject
+    Alert
+     alertname = "NoReference",
+     severity = "pipeline",
+     environment = config::misc::environment,
+     workflow = "dellyGermline",
+     project = project
+   For 30mins
+  Resume
+  
+  Where reference In ["hg38", "hg19"]  
+
+
+  Label "Group by workflow run, path and metatype and uid.  Define vcf within the workflow"
+  Group By
+    workflow_run_accession,
+    path,
+    metatype,
+    reference,
+    uid,
+    instrument_model
+  Into
+    external_keys = List vidarr::sign(external_key, input.signature),
+    timestamp = Univalued timestamp,
+    vcf = Where metatype == "application/vcf-gz" && "{path}" ~/.*unmatched_all.vcf.gz/ Univalued accession,
+    input_files = Univalued input_files,
+    project = Univalued project,
+    tissue_type = Univalued tissue_type
+
+
+  Label "Grouping by inputfiles"
+  Group By
+    inputs = input_files,
+    vcf,
+    projectname = project,
+    reference,
+    instrument_model_name = instrument_model
+  Into
+    uid = Where (tissue_type == "R") Univalued uid,
+    ts = Max timestamp,
+    external_keys = Flatten external_keys
+
+  Pick Max ts By uid, instrument_model_name
+
+
+  Label "join input files to fpr to get the workflow run accession"
+  LeftIntersectionJoin inputs To cerberus_fp([accession])
+  parent_wfrun = Where workflow In ["bamMergePreprocessing","bamMergePreprocessing_by_sample"] List workflow_run_accession
+
+  Label "join workflow run accession to fpr, to get bam files and index"
+  LeftIntersectionJoin parent_wfrun To cerberus_fp([workflow_run_accession])
+  bam =       Where metatype == "application/bam"
+  && donor==uid[0]
+  && tissue_origin==uid[1]
+  && tissue_type==uid[2]
+  && group_id==uid[3]
+  && "{path}" ~/.*.bam/ Univalued accession,
+  bam_index = Where metatype == "application/bam-index"
+  && donor==uid[0]
+  && tissue_origin==uid[1]
+  && tissue_type==uid[2]
+  && group_id==uid[3]
+  && "{path}" ~/.*.bai/ Univalued accession
+
+
+  Label "Group data by files"
+  Group By projectname, reference, instrument_model_name
+  Into
+    inputSamples = List {bam = INTERNAL{bam}, bai = INTERNAL{bam_index}, vcf = INTERNAL{vcf}},
+    output_file_name = Univalued "{projectname}",
+    external_keys = Flatten external_keys
+
+
+    Run dellyGermline_v2_0_1
+    Tag "project:{projectname}"
+    Tag "reference:{reference}"
+    Tag olive::common::priority_tag(projectname, CALLING)
+    Tag "DRYRUN_NOT_PRODUCTION"
+    With
+      external_keys = external_keys,
+      label_reference = reference,
+      arguments = {
+        dellyGermline_reference =  reference,
+        dellyGermline_outputFileNamePrefix = output_file_name,
+        dellyGermline_inputSamples = inputSamples,
+        dellyGermline_mergeSVSites_jobMemory = ``,
+        dellyGermline_mergeSVSites_timeout = ``,
+        dellyGermline_svGenotype_jobMemory = ``,
+        dellyGermline_svGenotype_timeout = ``,
+        dellyGermline_mergeSVSamples_jobMemory = ``,
+        dellyGermline_mergeSVSamples_timeout = ``,
+        dellyGermline_svFilter_jobMemory = ``,
+        dellyGermline_svFilter_timeout = ``,
+        dellyGermline_callCNV_jobMemory = ``,
+        dellyGermline_callCNV_timeout = ``,
+        dellyGermline_mergeCNVSites_jobMemory = ``,
+        dellyGermline_mergeCNVSites_timeout = ``,
+        dellyGermline_cnvGenotype_jobMemory = ``,
+        dellyGermline_cnvGenotype_timeout = ``,
+        dellyGermline_mergeCNVSamples_jobMemory = ``,
+        dellyGermline_mergeCNVSamples_timeout = ``,
+        dellyGermline_cnvFilter_jobMemory = ``,
+        dellyGermline_cnvFilter_timeout = ``
+      },
+      metadata = GLOBAL { ALL {{ outputDirectory = olive::common::get_project_output_prefix(projectname, table::vidarr_output_for_project::get(projectname)) }} },
+      engine_parameters = {
+        final_workflow_log_dir = config::misc::final_workflow_log_dir,
+        final_call_logs_dir = config::misc::final_call_logs_dir
+      };
+
