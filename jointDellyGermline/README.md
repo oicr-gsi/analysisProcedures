@@ -1,6 +1,6 @@
 <img src="https://oicr.on.ca/wp-content/themes/oicr/assets/img/logo.svg" width=25% height=25%>
 
-# Germline Joint Genotyping   
+# DELLY Germline SV and CNV Calling  
 
 ### Introduction
 DELLY performs germline structural variant (SV) and copy number variation (CNV) calling using a comprehensive tool designed for the detection of germline SVs and CNVs from next-generation sequencing data. Leveraging sophisticated algorithms, including discordant read pairs, split reads, and read depth analysis, DELLY identifies a wide range of genomic variations, including deletions, duplications, inversions, amplifications, and deletions. The Joint Delly Germline procedure takes in whole genome bam files and vcf files from DELLY, for a set of samples (ideally 20+ unrelated samples) and utilizes information from all samples to detect variants with greater sensitivity and accuracy.
