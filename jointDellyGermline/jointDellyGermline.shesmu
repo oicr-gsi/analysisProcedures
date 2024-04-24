@@ -105,7 +105,7 @@ Olive
     external_keys = Flatten external_keys
 
 
-    Run dellyGermline_v2_0_1
+    Run dellyGermline_v2_0_2
     Tag "project:{projectname}"
     Tag "reference:{reference}"
     Tag olive::common::priority_tag(projectname, CALLING)
