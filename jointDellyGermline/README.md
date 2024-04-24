@@ -16,8 +16,8 @@ A predefined set of vcf, bam, and bai files are provided as input to the Joint D
 
 ### Procedure
  1. Identify the set of samples you want to perform germline SV and CNV calling on
- 2. Construct an olive that will pull these files as inputs to the joint genotyping workflow. This workflow is available in vidarr stage. The olive can be set up as an .actnow.  The olive on this page can be modified to specify the project, with other modifications to limit the input data as needed, for example when we only process certain cases that have been released to the time point. An olive template "jointDellyGermline.shesmu" can be found in this repo.
- 3. The olive will invoke the dellyGermline workflow (https://github.com/oicr-gsi/dellyGermline), which will run the joint genotyping tool, and produce two vcf output files.
+ 2. Construct an olive that will pull these files as inputs to the joint genotyping workflow. This workflow is available in vidarr stage. The olive can be set up as an .actnow. The olive on this page can be modified to specify the project, with other modifications to limit the input data as needed; for example we may only process cases that have been released up to a certain time point. An olive template "jointDellyGermline.shesmu" can be found in this repo.
+ 3. The olive will invoke the dellyGermline workflow (https://github.com/oicr-gsi/dellyGermline), which will run the joint genotyping tool, and produce two vcf output files - one with SV calls across all samples being analyzed, and one with CNV calls across all samples being analyzed.
  
 ### Deliverables
  - Germline SV vcf
