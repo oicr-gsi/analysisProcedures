@@ -114,7 +114,7 @@ Olive
     Label "group the files by merged_library, workflow run"
     Group By @merged_library, workflow_run_accession, project, reference = `workflow_run_labels["reference"]? As string`,targeted_resequencing, instrument_model
     Into
-        vcf = Where metatype == "application/g-vcf-gz" Univalued accession,
+        vcf = Where metatype == "application/g-vcf-gz" && tissue_type == "R" Univalued accession,
         vcf_index = Where metatype == "application/tbi" Univalued accession,
         external_keys = Where metatype In ["application/g-vcf-gz", "application/tbi"] List vidarr::sign(external_key, std::signature::sha1),
         timestamp = Max timestamp
