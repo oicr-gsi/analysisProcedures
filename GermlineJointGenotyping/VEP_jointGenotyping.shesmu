@@ -1,0 +1,136 @@
+Version 1;
+Input cerberus_fp;
+Import vidarr::gsi::hpc_u20::*;
+
+#Use tumor-only version (instead of matched) to run normal files
+Olive
+  Description "Running variantEffectPredictor tumor-only workflow non-clinical"
+  Tag vidarr
+
+  Label "Is Vidarr data?"
+  Where workflow_engine == VIDARR
+
+  # exclude by tumor group IUSes
+  Where !olive::common::is_by_tumor_group_case(donor,ius)
+
+  Label "Select all vcf and tbi files"
+  Where
+    metatype In ["application/vcf-4-gzip", "application/vcf-gz", "application/tbi"]
+    && workflow In ["genotypeGVCFs"]
+    && library_design In ["EX", "WG", "TS"]
+    && project In ["AMLWES"] ## Update to the project you want to run
+    
+  Dump All To test
+  
+  Label "Is this NOT clinical, active project?"
+  Where
+    !(olive::common::is_clinical_project(project))
+    && timestamp >= Date 2020-01-01
+
+
+ Group By workflow_run_accession, project, reference = `workflow_run_labels["reference"]? As string`, targeted_resequencing
+   Into
+      timestamp = Max timestamp,
+      has_filtered_vcf = Where ("{path}" ~ /.*\.vcf\.gz/ ) Any ("{path}" ~ /.*recalibrated.*/) && tissue_type == "R",
+      vcf_files = Where metatype =="application/vcf-gz" && ("{path}" ~ /.*\.vcf\.gz/ ) List {accession = accession, path = path, external_key = external_key, signature = std::signature::sha1},
+      vcf_indexes = Where metatype =="application/tbi" && ("{path}" ~ /.*\.vcf\.gz\.tbi/) List  {accession = accession, path = path, external_key = external_key, signature = std::signature::sha1}
+  Pick Max timestamp By project, reference, targeted_resequencing
+
+  Dump All To dump1
+
+  Let
+    project,
+    reference,
+    input_vcfs = For f In vcf_files: Where If has_filtered_vcf Then ("{f.path}" ~ /.*\.recalibrated\.vcf\.gz/) Else ("{f.path}" ~ /.*\.vcf\.gz/) List f,
+    input_indexes = For f In vcf_indexes: Where If has_filtered_vcf Then ("{f.path}" ~ /.*\.recalibrated\.vcf\.gz\.tbi/) Else ("{f.path}" ~ /.*\.vcf\.gz\.tbi/) List f
+  Dump All To dump2
+
+  Let
+   project,
+   reference,
+   vcf_file = OnlyIf For f In input_vcfs: Univalued f.accession,
+   vcf_index =  OnlyIf For f In input_indexes: Univalued f.accession,
+   external_keys = For f In input_vcfs+input_indexes: List vidarr::sign(f.external_key, f.signature)
+  Dump All To dump3
+
+  Require reference_name = reference
+    OnReject
+      Alert
+        alertname = "NoReference",
+        severity = "pipeline",
+        environment = config::misc::environment,
+        workflow = "variantEffectPredictor-tumor-only",
+        reference = reference Default "Missing",
+        project = project
+      For 30mins
+    Resume
+
+  Where reference_name In ["hg38", "hg19"]
+
+  Run variantEffectPredictor_tumor_only_v2_3_3
+  Tag "project:{project}"
+  Tag "reference:{reference_name}"
+  Tag olive::common::priority_tag(project, CALLING)
+  With
+    external_keys = external_keys,
+    label_reference = reference_name,
+    arguments = {
+      variantEffectPredictor_reference = reference_name,
+      variantEffectPredictor_vcfFile = INTERNAL {vcf_file},
+      variantEffectPredictor_vcfIndex = INTERNAL {vcf_index},
+      variantEffectPredictor_onlyTumor = True,
+      variantEffectPredictor_normalName = ``,
+      variantEffectPredictor_tumorName = project,
+      variantEffectPredictor_toMAF = True,
+      variantEffectPredictor_targetBed = ``,
+      variantEffectPredictor_targetBedTask_modules = ``,
+      variantEffectPredictor_targetBedTask_basename = ``,
+      variantEffectPredictor_targetBedTask_jobMemory = `32`,
+      variantEffectPredictor_targetBedTask_timeout = `6`,
+      variantEffectPredictor_chromosomeArray_jobMemory = `1`,
+      variantEffectPredictor_chromosomeArray_timeout = `1`,
+      variantEffectPredictor_getChrCoefficient_memory = `1`,
+      variantEffectPredictor_getChrCoefficient_timeout = `1`,
+      variantEffectPredictor_subsetVcf_basename = ``,
+      variantEffectPredictor_subsetVcf_modules = ``,
+      variantEffectPredictor_subsetVcf_jobMemory = `32`,
+      variantEffectPredictor_subsetVcf_minMemory = `4`,
+      variantEffectPredictor_subsetVcf_timeout = `6`,
+      variantEffectPredictor_vep_vepStats = ``,
+      variantEffectPredictor_vep_jobMemory = `32`,
+      variantEffectPredictor_vep_minMemory = `4`,
+      variantEffectPredictor_vep_threads = ``,
+      variantEffectPredictor_vep_timeout = `32`,
+      variantEffectPredictor_vep_addParam = ``,
+      variantEffectPredictor_vep_basename = ``,
+      variantEffectPredictor_tumorOnlyAlign_modules = ``,
+      variantEffectPredictor_tumorOnlyAlign_updateTagValue = ``,
+      variantEffectPredictor_tumorOnlyAlign_basename = ``,
+      variantEffectPredictor_tumorOnlyAlign_jobMemory = `32`,
+      variantEffectPredictor_tumorOnlyAlign_minMemory = `4`,
+      variantEffectPredictor_tumorOnlyAlign_timeout = `32`,
+      variantEffectPredictor_getSampleNames_jobMemory = `1`,
+      variantEffectPredictor_getSampleNames_timeout = `1`,
+      variantEffectPredictor_vcf2maf_basename = ``,
+      variantEffectPredictor_vcf2maf_minHomVaf = ``,
+      variantEffectPredictor_vcf2maf_bufferSize = ``,
+      variantEffectPredictor_vcf2maf_jobMemory = `32`,
+      variantEffectPredictor_vcf2maf_minMemory = `4`,
+      variantEffectPredictor_vcf2maf_threads = ``,
+      variantEffectPredictor_vcf2maf_timeout = `96`,
+      variantEffectPredictor_vcf2maf_retainInfoProvided = ``,
+      variantEffectPredictor_vcf2maf_vepStats = ``,
+      variantEffectPredictor_mergeMafs_modules = ``,
+      variantEffectPredictor_mergeMafs_jobMemory = `24`,
+      variantEffectPredictor_mergeMafs_timeout = `24`,
+      variantEffectPredictor_mergeVcfs_modules = ``,
+      variantEffectPredictor_mergeVcfs_extraArgs = ``,
+      variantEffectPredictor_mergeVcfs_jobMemory = `24`,
+      variantEffectPredictor_mergeVcfs_overhead = ``,
+      variantEffectPredictor_mergeVcfs_timeout = `24`
+    },
+    metadata = GLOBAL { ALL {{ outputDirectory = olive::common::get_project_output_prefix(project, table::vidarr_output_for_project::get(project)) }} },
+    engine_parameters = {
+      final_workflow_log_dir = config::misc::final_workflow_log_dir,
+      final_call_logs_dir = config::misc::final_call_logs_dir
+    };
